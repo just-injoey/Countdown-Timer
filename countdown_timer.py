@@ -48,9 +48,47 @@ class Application(Frame):
     def enter(self,*args):
         self.input_time.delete(0, 'end')
         
-        
+    # Resume function
+    def startTime(self):
+        self.get_time = self.time_var.get()
+        try:
+            self.time_in_int = int(self.get_time)
+        except:
+            self.time_in_int = 0
+        self._starttime = self.time_in_int
+        self._paused = False
+        if self._alarm_id is None:
+            self.countdown(self._starttime)
 
+    # Pause function
+    def pauseTime(self):
+        if self._alarm_id is not None:
+            self._paused = True
 
+    # Reset function
+    def resetTime(self):
+        if self._alarm_id is not None:
+            self.master.after_cancel(self._alarm_id)
+            self._alarm_id = None
+            self._paused = False
+            self.countdown(0)
+            self._paused = True
+    
+    def closeApp(self):
+        self.master.destroy()
+
+    def countdown(self, timeInSeconds, start=True):
+        if timeInSeconds == 0:
+            self._starttime=0
+            self.labelvariable.set("0")
+            return
+        if start:
+            self._starttime = timeInSeconds
+        if self._paused:
+            self._alarm_id = self.master.after(1000, self.countdown, timeInSeconds, False)
+        else:
+            app.labelvariable.set(timeInSeconds)
+            self._alarm_id = self.master.after(1000, self.countdown, timeInSeconds-1, False)
 
 
 if __name__ == '__main__':
